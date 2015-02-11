@@ -14,6 +14,7 @@
 @interface UIView (SwipeableActions)
 
 - (void)setSwipeDeleteEnabled:(BOOL)enabled;
+- (void)endEditingAnimated:(BOOL)animated;
 
 @property (strong, readonly) UIButton *actionButton;
 

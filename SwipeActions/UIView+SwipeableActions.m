@@ -24,6 +24,7 @@ static CGFloat const kSwipeActionWidth = 60.0f;
 {
 	if (enabled) {
 		UITapGestureRecognizer *tapGesture = [[UITapGestureRecognizer alloc] initWithTarget:self action:@selector(tapGestureTriggered:)];
+		tapGesture.cancelsTouchesInView = NO;
 		[self addGestureRecognizer:tapGesture];
 
 		[self addSubview:self.swipeScrollView];
@@ -83,16 +84,15 @@ static CGFloat const kSwipeActionWidth = 60.0f;
 
 - (void)tapGestureTriggered:(UITapGestureRecognizer *)sender
 {
-	NSLog(@"tap");
 	UIScrollView *scrollView = (UIScrollView *)[self viewWithTag:kSwipeScrollViewTag];
 	if (scrollView && scrollView.contentOffset.x >= kSwipeActionWidth) {
-		[self closeScrollViewAnimated:YES];
+		[self endEditingAnimated:YES];
 	}
 }
 
 - (void)actionPressed:(id)sender
 {
-	[self closeScrollViewAnimated:YES];
+	[self endEditingAnimated:YES];
 }
 
 #pragma mark - UIScrollViewDelegate
@@ -110,7 +110,6 @@ static CGFloat const kSwipeActionWidth = 60.0f;
 
 - (void)scrollViewWillBeginDragging:(UIScrollView *)scrollView
 {
-	NSLog(@"will begin dragging");
 	if (scrollView.contentOffset.x == 0) {
 		[self updateImageViewRaster];
 		self.swipeImageView.hidden = NO;
@@ -124,18 +123,11 @@ static CGFloat const kSwipeActionWidth = 60.0f;
 - (void)scrollViewDidEndDragging:(UIScrollView *)scrollView willDecelerate:(BOOL)decelerate
 {
 	if (scrollView.contentOffset.x < kSwipeActionWidth && !decelerate) {
-		[self closeScrollViewAnimated:YES];
+		[self endEditingAnimated:YES];
 	}
 }
 
-- (void)scrollViewDidEndDecelerating:(UIScrollView *)scrollView
-{
-	if (scrollView.contentOffset.x < kSwipeActionWidth) {
-		[self closeScrollViewAnimated:YES];
-	}
-}
-
-- (void)closeScrollViewAnimated:(BOOL)animated
+- (void)endEditingAnimated:(BOOL)animated
 {
 	[UIView animateWithDuration:0.2f animations:^{
 		self.swipeScrollView.contentOffset = CGPointZero;
@@ -144,6 +136,11 @@ static CGFloat const kSwipeActionWidth = 60.0f;
 		self.actionButton.hidden = YES;
 		self.swipeScrollView.backgroundColor = [UIColor clearColor];
 	}];
+}
+
+- (BOOL)gestureRecognizer:(UIGestureRecognizer *)gestureRecognizer shouldRecognizeSimultaneouslyWithGestureRecognizer:(UIGestureRecognizer *)otherGestureRecognizer
+{
+	return YES;
 }
 
 #pragma mark - Helpers
