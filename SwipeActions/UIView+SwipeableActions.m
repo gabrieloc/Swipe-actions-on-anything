@@ -27,11 +27,16 @@ static CGFloat const kSwipeActionWidth = 60.0f;
 - (void)setSwipeDeleteEnabled:(BOOL)enabled
 {
 	if (enabled) {
-		UISwipeGestureRecognizer *swipeGesture = [[UISwipeGestureRecognizer alloc] initWithTarget:self action:@selector(gestureTriggered:)];
+		UISwipeGestureRecognizer *swipeGesture = [[UISwipeGestureRecognizer alloc] initWithTarget:self action:@selector(swipeGestureTriggered:)];
 		swipeGesture.direction = UISwipeGestureRecognizerDirectionLeft;
 		[self addGestureRecognizer:swipeGesture];
-		[self createSubviews];
-		[self setSubviewsHidden:YES];
+		
+		UITapGestureRecognizer *tapGesture = [[UITapGestureRecognizer alloc] initWithTarget:self action:@selector(tapGestureTriggered:)];
+		[self addGestureRecognizer:tapGesture];
+
+		
+		self.scrollView.alpha = 0.0f;
+		self.actionButton.alpha = 0.0f;
 	} else {
 		[self setGestureRecognizers:nil];
 		[self destroySubviews];
@@ -48,6 +53,8 @@ static CGFloat const kSwipeActionWidth = 60.0f;
 		scrollView.contentSize = CGSizeMake(CGRectGetWidth(self.bounds) + kSwipeActionWidth, CGRectGetHeight(self.bounds));
 		scrollView.showsHorizontalScrollIndicator = NO;
 		scrollView.delegate = self;
+		scrollView.delaysContentTouches = NO;
+		[self addSubview:scrollView];
 	}
 	return scrollView;
 }
@@ -58,6 +65,7 @@ static CGFloat const kSwipeActionWidth = 60.0f;
 	if (!imageView) {
 		imageView = [[UIImageView alloc] initWithImage:[UIImage imageWithView:self]];
 		imageView.tag = kSwipeImageViewTag;
+		[self.scrollView addSubview:imageView];
 	}
 	return imageView;
 }
@@ -73,40 +81,27 @@ static CGFloat const kSwipeActionWidth = 60.0f;
 		[button setTitleColor:[UIColor whiteColor] forState:UIControlStateNormal];
 		[button setTitle:@"Delete" forState:UIControlStateNormal];
 		[button addTarget:self action:@selector(actionPressed:) forControlEvents:UIControlEventTouchUpInside];
+		[self.scrollView insertSubview:button belowSubview:self.imageView];
 	}
 	return button;
 }
 
-- (void)createSubviews
+- (void)swipeGestureTriggered:(id)sender
 {
-//	[self addSubview:self.actionButton];
-	[self addSubview:self.scrollView];
-	[self.scrollView addSubview:self.imageView];
-	[self.scrollView insertSubview:self.actionButton belowSubview:self.imageView];
+	self.scrollView.alpha = 1.0f;
+	self.actionButton.alpha = 1.0f;
 }
 
-- (void)destroySubviews
+- (void)tapGestureTriggered:(id)sender
 {
-	[self.scrollView removeFromSuperview];
-	[self.imageView removeFromSuperview];
-	[self.actionButton removeFromSuperview];
-}
-
-- (void)setSubviewsHidden:(BOOL)hidden
-{
-	self.scrollView.hidden = hidden;
-	self.actionButton.hidden = hidden;
-}
-
-- (void)gestureTriggered:(id)sender
-{
-	[self setSubviewsHidden:NO];
+	if (self.scrollView.contentOffset.x > kSwipeActionWidth) {
+		[self closeScrollViewAnimated:YES];
+	}
 }
 
 - (void)actionPressed:(id)sender
 {
-	[self setSubviewsHidden:YES];
-	[self destroySubviews];
+	[self closeScrollViewAnimated:YES];
 }
 
 #pragma mark - UIScrollViewDelegate
@@ -122,6 +117,37 @@ static CGFloat const kSwipeActionWidth = 60.0f;
 										 CGRectGetHeight(self.bounds));
 }
 
+- (void)scrollViewDidEndDragging:(UIScrollView *)scrollView willDecelerate:(BOOL)decelerate
+{
+	if (scrollView.contentOffset.x < kSwipeActionWidth && !decelerate) {
+		[self closeScrollViewAnimated:YES];
+	}
+}
+
+- (void)scrollViewDidEndDecelerating:(UIScrollView *)scrollView
+{
+	if (scrollView.contentOffset.x < kSwipeActionWidth) {
+		[self closeScrollViewAnimated:YES];
+	}
+}
+
+- (void)closeScrollViewAnimated:(BOOL)animated
+{
+	[UIView animateWithDuration:0.1f animations:^{
+		self.scrollView.alpha = 0.0f;
+		self.scrollView.contentOffset = CGPointZero;
+	} completion:^(BOOL finished) {
+		[self destroySubviews];
+	}];
+}
+
+- (void)destroySubviews
+{
+	[self.scrollView removeFromSuperview];
+	[self.imageView removeFromSuperview];
+	[self.actionButton removeFromSuperview];
+}
+
 @end
 
 @implementation UIImage(drawing)
@@ -130,7 +156,7 @@ static CGFloat const kSwipeActionWidth = 60.0f;
 {
 	UIGraphicsBeginImageContextWithOptions(view.bounds.size, view.opaque, 0.0);
 	[view.layer renderInContext:UIGraphicsGetCurrentContext()];
-	UIImage * img = UIGraphicsGetImageFromCurrentImageContext();
+	UIImage *img = UIGraphicsGetImageFromCurrentImageContext();
 	UIGraphicsEndImageContext();
 	return img;
 }
