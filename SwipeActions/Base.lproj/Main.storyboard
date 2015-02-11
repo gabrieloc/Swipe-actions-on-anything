@@ -44,11 +44,8 @@
                                         <color key="textColor" cocoaTouchSystemColor="darkTextColor"/>
                                         <nil key="highlightedColor"/>
                                     </label>
-                                    <slider opaque="NO" contentMode="scaleToFill" contentHorizontalAlignment="center" contentVerticalAlignment="center" value="0.5" minValue="0.0" maxValue="1" translatesAutoresizingMaskIntoConstraints="NO" id="EyQ-i0-3lH">
-                                        <rect key="frame" x="160.5" y="11.5" width="433.5" height="31"/>
-                                    </slider>
-                                    <imageView userInteractionEnabled="NO" contentMode="scaleToFill" horizontalHuggingPriority="251" verticalHuggingPriority="251" horizontalCompressionResistancePriority="250" verticalCompressionResistancePriority="250" misplaced="YES" image="gabrieloc" translatesAutoresizingMaskIntoConstraints="NO" id="Jcn-iE-OyV">
-                                        <rect key="frame" x="16" y="52" width="131" height="131"/>
+                                    <imageView userInteractionEnabled="NO" contentMode="scaleToFill" horizontalHuggingPriority="251" verticalHuggingPriority="251" horizontalCompressionResistancePriority="250" verticalCompressionResistancePriority="250" image="gabrieloc" translatesAutoresizingMaskIntoConstraints="NO" id="Jcn-iE-OyV">
+                                        <rect key="frame" x="16" y="52" width="132" height="132"/>
                                         <constraints>
                                             <constraint firstAttribute="width" secondItem="Jcn-iE-OyV" secondAttribute="height" id="LfY-qj-6Ms"/>
                                             <constraint firstAttribute="width" constant="100" id="Mlr-oF-6Hq"/>
@@ -59,20 +56,28 @@
                                             </mask>
                                         </variation>
                                     </imageView>
+                                    <segmentedControl opaque="NO" contentMode="scaleToFill" contentHorizontalAlignment="left" contentVerticalAlignment="top" segmentControlStyle="plain" selectedSegmentIndex="0" translatesAutoresizingMaskIntoConstraints="NO" id="Ikr-SX-lRv">
+                                        <rect key="frame" x="178" y="13" width="405.5" height="29"/>
+                                        <segments>
+                                            <segment title="Foo"/>
+                                            <segment title="Bar"/>
+                                            <segment title="Baz"/>
+                                        </segments>
+                                    </segmentedControl>
                                 </subviews>
                                 <color key="backgroundColor" white="1" alpha="1" colorSpace="calibratedWhite"/>
                                 <constraints>
                                     <constraint firstItem="UFl-QV-4ad" firstAttribute="leading" secondItem="c9Q-nS-aRe" secondAttribute="leading" constant="16" id="0lR-13-Qg0"/>
                                     <constraint firstItem="UFl-QV-4ad" firstAttribute="leading" secondItem="Jcn-iE-OyV" secondAttribute="leading" id="7UR-uZ-mvY"/>
+                                    <constraint firstItem="UFl-QV-4ad" firstAttribute="centerY" secondItem="Ikr-SX-lRv" secondAttribute="centerY" id="8av-Vz-nAa"/>
+                                    <constraint firstAttribute="trailing" secondItem="Ikr-SX-lRv" secondAttribute="trailing" constant="16" id="Cae-1e-nGg"/>
                                     <constraint firstAttribute="height" constant="200" id="KaZ-Gp-ZWc"/>
                                     <constraint firstAttribute="bottom" secondItem="Jcn-iE-OyV" secondAttribute="bottom" constant="16" id="Kge-qs-FKv"/>
-                                    <constraint firstItem="EyQ-i0-3lH" firstAttribute="centerY" secondItem="UFl-QV-4ad" secondAttribute="centerY" constant="0.25" id="LkR-z7-qtF"/>
-                                    <constraint firstItem="EyQ-i0-3lH" firstAttribute="trailing" secondItem="c9Q-nS-aRe" secondAttribute="trailingMargin" id="NwY-hO-Web"/>
+                                    <constraint firstItem="Ikr-SX-lRv" firstAttribute="leading" secondItem="UFl-QV-4ad" secondAttribute="trailing" constant="32" id="LgU-sg-vG3"/>
                                     <constraint firstItem="UFl-QV-4ad" firstAttribute="top" secondItem="c9Q-nS-aRe" secondAttribute="top" constant="16" id="R97-hk-fVy"/>
                                     <constraint firstItem="Jcn-iE-OyV" firstAttribute="leading" secondItem="c9Q-nS-aRe" secondAttribute="leading" constant="20" symbolic="YES" id="Sgf-DV-8cb"/>
                                     <constraint firstAttribute="centerY" secondItem="UFl-QV-4ad" secondAttribute="centerY" id="W0V-Th-mx7"/>
                                     <constraint firstItem="Jcn-iE-OyV" firstAttribute="top" secondItem="UFl-QV-4ad" secondAttribute="bottom" constant="16" id="ebX-Nz-4LU"/>
-                                    <constraint firstItem="EyQ-i0-3lH" firstAttribute="leading" secondItem="UFl-QV-4ad" secondAttribute="trailing" constant="16" id="sTU-4x-atV"/>
                                 </constraints>
                                 <variation key="default">
                                     <mask key="constraints">

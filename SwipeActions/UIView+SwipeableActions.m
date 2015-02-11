@@ -13,13 +13,9 @@ static NSUInteger const kSwipeImageViewTag = 101;
 static NSUInteger const kSwipeButtonTag = 102;
 static CGFloat const kSwipeActionWidth = 60.0f;
 
-@interface UIView() <UIScrollViewDelegate>
+@interface UIView() <UIScrollViewDelegate, UIGestureRecognizerDelegate>
 @property (strong, nonatomic) UIScrollView *swipeScrollView;
 @property (strong, nonatomic) UIImageView *swipeImageView;
-@end
-
-@interface UIImage(drawing)
-+ (instancetype)imageWithView:(UIView *)view;
 @end
 
 @implementation UIView (SwipeableActions)
@@ -27,17 +23,20 @@ static CGFloat const kSwipeActionWidth = 60.0f;
 - (void)setSwipeDeleteEnabled:(BOOL)enabled
 {
 	if (enabled) {
-		UISwipeGestureRecognizer *swipeGesture = [[UISwipeGestureRecognizer alloc] initWithTarget:self action:@selector(swipeGestureTriggered:)];
-		swipeGesture.direction = UISwipeGestureRecognizerDirectionLeft;
-		[self addGestureRecognizer:swipeGesture];
-		
 		UITapGestureRecognizer *tapGesture = [[UITapGestureRecognizer alloc] initWithTarget:self action:@selector(tapGestureTriggered:)];
+		tapGesture.cancelsTouchesInView = NO;
 		[self addGestureRecognizer:tapGesture];
 
-		self.swipeScrollView.alpha = 0.0f;
+		[self addSubview:self.swipeScrollView];
+		[self.swipeScrollView addSubview:self.swipeImageView];
+		self.swipeImageView.hidden = YES;
+		[self.swipeScrollView insertSubview:self.actionButton belowSubview:self.swipeImageView];
+		self.actionButton.hidden = YES;
 	} else {
 		[self setGestureRecognizers:nil];
-		[self.swipeScrollView removeFromSuperview];
+		[[self viewWithTag:kSwipeButtonTag] removeFromSuperview];
+		[[self viewWithTag:kSwipeImageViewTag] removeFromSuperview];
+		[[self viewWithTag:kSwipeScrollViewTag] removeFromSuperview];
 	}
 }
 
@@ -46,13 +45,12 @@ static CGFloat const kSwipeActionWidth = 60.0f;
 	UIScrollView *scrollView = (UIScrollView *)[self viewWithTag:kSwipeScrollViewTag];
 	if (!scrollView) {
 		scrollView = [[UIScrollView alloc] initWithFrame:self.bounds];
-		scrollView.backgroundColor = [UIColor whiteColor];
-		scrollView.autoresizingMask = UIViewAutoresizingFlexibleWidth|UIViewAutoresizingFlexibleHeight;
+		scrollView.backgroundColor = [UIColor clearColor];
 		scrollView.tag = kSwipeScrollViewTag;
 		scrollView.showsHorizontalScrollIndicator = NO;
 		scrollView.delegate = self;
 		scrollView.delaysContentTouches = NO;
-		[self addSubview:scrollView];
+		scrollView.contentSize = CGSizeMake(CGRectGetWidth(self.bounds) + kSwipeActionWidth, CGRectGetHeight(self.bounds));
 	}
 	return scrollView;
 }
@@ -61,9 +59,8 @@ static CGFloat const kSwipeActionWidth = 60.0f;
 {
 	UIImageView *imageView = (UIImageView *)[self viewWithTag:kSwipeImageViewTag];
 	if (!imageView) {
-		imageView = [[UIImageView alloc] initWithImage:[UIImage imageWithView:self]];
+		imageView = [[UIImageView alloc] initWithFrame:self.bounds];
 		imageView.tag = kSwipeImageViewTag;
-		[self.swipeScrollView addSubview:imageView];
 	}
 	return imageView;
 }
@@ -75,24 +72,17 @@ static CGFloat const kSwipeActionWidth = 60.0f;
 		button = [UIButton buttonWithType:UIButtonTypeSystem];
 		button.frame = CGRectMake(CGRectGetWidth(self.bounds) - kSwipeActionWidth, 0.0f, kSwipeActionWidth, CGRectGetHeight(self.bounds));
 		button.tag = kSwipeButtonTag;
-		button.backgroundColor = [UIColor redColor];
+		button.backgroundColor = [UIColor blueColor];
 		[button setTitleColor:[UIColor whiteColor] forState:UIControlStateNormal];
-		[button setTitle:@"Delete" forState:UIControlStateNormal];
+		[button setTitle:@"Action" forState:UIControlStateNormal];
 		[button addTarget:self action:@selector(actionPressed:) forControlEvents:UIControlEventTouchUpInside];
-		[self.swipeScrollView insertSubview:button belowSubview:self.swipeImageView];
 	}
 	return button;
 }
 
-- (void)swipeGestureTriggered:(UISwipeGestureRecognizer *)sender
-{
-	[self.swipeImageView setNeedsDisplay];
-	self.swipeScrollView.contentSize = CGSizeMake(CGRectGetWidth(self.bounds) + kSwipeActionWidth, CGRectGetHeight(self.bounds));
-	self.swipeScrollView.alpha = 1.0f;
-}
-
 - (void)tapGestureTriggered:(UITapGestureRecognizer *)sender
 {
+	NSLog(@"tap");
 	UIScrollView *scrollView = (UIScrollView *)[self viewWithTag:kSwipeScrollViewTag];
 	if (scrollView && scrollView.contentOffset.x >= kSwipeActionWidth) {
 		[self closeScrollViewAnimated:YES];
@@ -117,6 +107,17 @@ static CGFloat const kSwipeActionWidth = 60.0f;
 										 CGRectGetHeight(self.bounds));
 }
 
+- (void)scrollViewWillBeginDragging:(UIScrollView *)scrollView
+{
+	NSLog(@"will begin dragging");
+	if (scrollView.contentOffset.x == 0) {
+		[self updateImageViewRaster];
+		self.swipeImageView.hidden = NO;
+		self.actionButton.hidden = NO;
+		self.swipeScrollView.backgroundColor = [UIColor whiteColor];
+	}
+}
+
 - (void)scrollViewDidEndDragging:(UIScrollView *)scrollView willDecelerate:(BOOL)decelerate
 {
 	if (scrollView.contentOffset.x < kSwipeActionWidth && !decelerate) {
@@ -133,25 +134,32 @@ static CGFloat const kSwipeActionWidth = 60.0f;
 
 - (void)closeScrollViewAnimated:(BOOL)animated
 {
-	[UIView animateWithDuration:0.1f animations:^{
-		self.swipeScrollView.alpha = 0.0f;
+	[UIView animateWithDuration:0.2f animations:^{
 		self.swipeScrollView.contentOffset = CGPointZero;
 	} completion:^(BOOL finished) {
-		[self.swipeScrollView removeFromSuperview];
+		self.swipeImageView.hidden = YES;
+		self.actionButton.hidden = YES;
+		self.swipeScrollView.backgroundColor = [UIColor clearColor];
 	}];
 }
 
-@end
+#pragma mark - UIGestureRecognizerDelegate
 
-@implementation UIImage(drawing)
-
-+ (UIImage *)imageWithView:(UIView *)view
+- (BOOL)gestureRecognizer:(UIGestureRecognizer *)gestureRecognizer shouldRecognizeSimultaneouslyWithGestureRecognizer:(UIGestureRecognizer *)otherGestureRecognizer
 {
-	UIGraphicsBeginImageContextWithOptions(view.bounds.size, view.opaque, 0.0);
-	[view.layer renderInContext:UIGraphicsGetCurrentContext()];
-	UIImage *img = UIGraphicsGetImageFromCurrentImageContext();
+	return YES;
+}
+
+#pragma mark - Helpers
+
+- (void)updateImageViewRaster
+{
+	UIGraphicsBeginImageContextWithOptions(self.bounds.size, self.opaque, 0.0);
+	[self.layer renderInContext:UIGraphicsGetCurrentContext()];
+	UIImage *image = UIGraphicsGetImageFromCurrentImageContext();
 	UIGraphicsEndImageContext();
-	return img;
+
+	self.swipeImageView.image = image;
 }
 
 @end
