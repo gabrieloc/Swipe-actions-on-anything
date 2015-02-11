@@ -7,16 +7,17 @@
 //
 
 #import "ViewController.h"
+#import "UIView+SwipeableActions.h"
 
 @interface ViewController ()
-
+@property (strong, nonatomic) IBOutlet UIView *someView;
 @end
 
 @implementation ViewController
 
-- (void)viewDidLoad {
-	[super viewDidLoad];
-	// Do any additional setup after loading the view, typically from a nib.
+- (void)viewDidAppear:(BOOL)animated {
+	[super viewDidAppear:animated];
+	[self.someView setSwipeDeleteEnabled:YES];
 }
 
 - (void)didReceiveMemoryWarning {
