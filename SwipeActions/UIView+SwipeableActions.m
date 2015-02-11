@@ -13,7 +13,7 @@ static NSUInteger const kSwipeImageViewTag = 101;
 static NSUInteger const kSwipeButtonTag = 102;
 static CGFloat const kSwipeActionWidth = 60.0f;
 
-@interface UIView() <UIScrollViewDelegate, UIGestureRecognizerDelegate>
+@interface UIView() <UIScrollViewDelegate>
 @property (strong, nonatomic) UIScrollView *swipeScrollView;
 @property (strong, nonatomic) UIImageView *swipeImageView;
 @end
@@ -24,7 +24,6 @@ static CGFloat const kSwipeActionWidth = 60.0f;
 {
 	if (enabled) {
 		UITapGestureRecognizer *tapGesture = [[UITapGestureRecognizer alloc] initWithTarget:self action:@selector(tapGestureTriggered:)];
-		tapGesture.cancelsTouchesInView = NO;
 		[self addGestureRecognizer:tapGesture];
 
 		[self addSubview:self.swipeScrollView];
@@ -45,12 +44,13 @@ static CGFloat const kSwipeActionWidth = 60.0f;
 	UIScrollView *scrollView = (UIScrollView *)[self viewWithTag:kSwipeScrollViewTag];
 	if (!scrollView) {
 		scrollView = [[UIScrollView alloc] initWithFrame:self.bounds];
+		scrollView.autoresizingMask = UIViewAutoresizingFlexibleWidth|UIViewAutoresizingFlexibleHeight;
 		scrollView.backgroundColor = [UIColor clearColor];
 		scrollView.tag = kSwipeScrollViewTag;
 		scrollView.showsHorizontalScrollIndicator = NO;
 		scrollView.delegate = self;
 		scrollView.delaysContentTouches = NO;
-		scrollView.contentSize = CGSizeMake(CGRectGetWidth(self.bounds) + kSwipeActionWidth, CGRectGetHeight(self.bounds));
+		scrollView.contentSize = CGSizeMake(HUGE_VALF, 0); // Fixes issue with UITableViewCells
 	}
 	return scrollView;
 }
@@ -60,6 +60,7 @@ static CGFloat const kSwipeActionWidth = 60.0f;
 	UIImageView *imageView = (UIImageView *)[self viewWithTag:kSwipeImageViewTag];
 	if (!imageView) {
 		imageView = [[UIImageView alloc] initWithFrame:self.bounds];
+		imageView.autoresizingMask = UIViewAutoresizingFlexibleWidth|UIViewAutoresizingFlexibleHeight;
 		imageView.tag = kSwipeImageViewTag;
 	}
 	return imageView;
@@ -115,6 +116,8 @@ static CGFloat const kSwipeActionWidth = 60.0f;
 		self.swipeImageView.hidden = NO;
 		self.actionButton.hidden = NO;
 		self.swipeScrollView.backgroundColor = [UIColor whiteColor];
+		
+		self.swipeScrollView.contentSize = CGSizeMake(CGRectGetWidth(self.bounds) + kSwipeActionWidth, CGRectGetHeight(self.bounds));
 	}
 }
 
@@ -143,13 +146,6 @@ static CGFloat const kSwipeActionWidth = 60.0f;
 	}];
 }
 
-#pragma mark - UIGestureRecognizerDelegate
-
-- (BOOL)gestureRecognizer:(UIGestureRecognizer *)gestureRecognizer shouldRecognizeSimultaneouslyWithGestureRecognizer:(UIGestureRecognizer *)otherGestureRecognizer
-{
-	return YES;
-}
-
 #pragma mark - Helpers
 
 - (void)updateImageViewRaster
@@ -163,3 +159,4 @@ static CGFloat const kSwipeActionWidth = 60.0f;
 }
 
 @end
+
