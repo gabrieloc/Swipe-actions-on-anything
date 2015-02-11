@@ -14,8 +14,8 @@ static NSUInteger const kSwipeButtonTag = 102;
 static CGFloat const kSwipeActionWidth = 60.0f;
 
 @interface UIView() <UIScrollViewDelegate>
-@property (strong, nonatomic) UIScrollView *scrollView;
-@property (strong, nonatomic) UIImageView *imageView;
+@property (strong, nonatomic) UIScrollView *swipeScrollView;
+@property (strong, nonatomic) UIImageView *swipeImageView;
 @end
 
 @interface UIImage(drawing)
@@ -34,14 +34,14 @@ static CGFloat const kSwipeActionWidth = 60.0f;
 		UITapGestureRecognizer *tapGesture = [[UITapGestureRecognizer alloc] initWithTarget:self action:@selector(tapGestureTriggered:)];
 		[self addGestureRecognizer:tapGesture];
 
-		self.scrollView.alpha = 0.0f;
+		self.swipeScrollView.alpha = 0.0f;
 	} else {
 		[self setGestureRecognizers:nil];
-		[self.scrollView removeFromSuperview];
+		[self.swipeScrollView removeFromSuperview];
 	}
 }
 
-- (UIScrollView *)scrollView
+- (UIScrollView *)swipeScrollView
 {
 	UIScrollView *scrollView = (UIScrollView *)[self viewWithTag:kSwipeScrollViewTag];
 	if (!scrollView) {
@@ -49,7 +49,6 @@ static CGFloat const kSwipeActionWidth = 60.0f;
 		scrollView.backgroundColor = [UIColor whiteColor];
 		scrollView.autoresizingMask = UIViewAutoresizingFlexibleWidth|UIViewAutoresizingFlexibleHeight;
 		scrollView.tag = kSwipeScrollViewTag;
-		scrollView.contentSize = CGSizeMake(CGRectGetWidth(self.bounds) + kSwipeActionWidth, CGRectGetHeight(self.bounds));
 		scrollView.showsHorizontalScrollIndicator = NO;
 		scrollView.delegate = self;
 		scrollView.delaysContentTouches = NO;
@@ -58,13 +57,13 @@ static CGFloat const kSwipeActionWidth = 60.0f;
 	return scrollView;
 }
 
-- (UIImageView *)imageView
+- (UIImageView *)swipeImageView
 {
 	UIImageView *imageView = (UIImageView *)[self viewWithTag:kSwipeImageViewTag];
 	if (!imageView) {
 		imageView = [[UIImageView alloc] initWithImage:[UIImage imageWithView:self]];
 		imageView.tag = kSwipeImageViewTag;
-		[self.scrollView addSubview:imageView];
+		[self.swipeScrollView addSubview:imageView];
 	}
 	return imageView;
 }
@@ -80,15 +79,16 @@ static CGFloat const kSwipeActionWidth = 60.0f;
 		[button setTitleColor:[UIColor whiteColor] forState:UIControlStateNormal];
 		[button setTitle:@"Delete" forState:UIControlStateNormal];
 		[button addTarget:self action:@selector(actionPressed:) forControlEvents:UIControlEventTouchUpInside];
-		[self.scrollView insertSubview:button belowSubview:self.imageView];
+		[self.swipeScrollView insertSubview:button belowSubview:self.swipeImageView];
 	}
 	return button;
 }
 
 - (void)swipeGestureTriggered:(UISwipeGestureRecognizer *)sender
 {
-	[self.imageView setNeedsDisplay];
-	self.scrollView.alpha = 1.0f;
+	[self.swipeImageView setNeedsDisplay];
+	self.swipeScrollView.contentSize = CGSizeMake(CGRectGetWidth(self.bounds) + kSwipeActionWidth, CGRectGetHeight(self.bounds));
+	self.swipeScrollView.alpha = 1.0f;
 }
 
 - (void)tapGestureTriggered:(UITapGestureRecognizer *)sender
@@ -134,10 +134,10 @@ static CGFloat const kSwipeActionWidth = 60.0f;
 - (void)closeScrollViewAnimated:(BOOL)animated
 {
 	[UIView animateWithDuration:0.1f animations:^{
-		self.scrollView.alpha = 0.0f;
-		self.scrollView.contentOffset = CGPointZero;
+		self.swipeScrollView.alpha = 0.0f;
+		self.swipeScrollView.contentOffset = CGPointZero;
 	} completion:^(BOOL finished) {
-		[self.scrollView removeFromSuperview];
+		[self.swipeScrollView removeFromSuperview];
 	}];
 }
 

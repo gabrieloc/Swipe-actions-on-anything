@@ -37,7 +37,7 @@
 {
 	UITableViewCell *cell = [tableView dequeueReusableCellWithIdentifier:@"Cell"];
 	cell.textLabel.text = [NSString stringWithFormat:@"Cell %@", @(indexPath.row)];
-	[cell.contentView setSwipeDeleteEnabled:YES];
+	[cell setSwipeDeleteEnabled:YES];
 	return cell;
 }
 
