@@ -15,7 +15,6 @@
 		C05365FE1A8B1B78008B3223 /* LaunchScreen.xib in Resources */ = {isa = PBXBuildFile; fileRef = C05365FC1A8B1B78008B3223 /* LaunchScreen.xib */; };
 		C053660A1A8B1B78008B3223 /* SwipeActionsTests.m in Sources */ = {isa = PBXBuildFile; fileRef = C05366091A8B1B78008B3223 /* SwipeActionsTests.m */; };
 		C05366151A8B1B8C008B3223 /* UIView+SwipeableActions.m in Sources */ = {isa = PBXBuildFile; fileRef = C05366141A8B1B8C008B3223 /* UIView+SwipeableActions.m */; };
-		C05366181A8B1C41008B3223 /* SomeView.m in Sources */ = {isa = PBXBuildFile; fileRef = C05366171A8B1C41008B3223 /* SomeView.m */; };
 /* End PBXBuildFile section */
 
 /* Begin PBXContainerItemProxy section */
@@ -44,8 +43,6 @@
 		C05366091A8B1B78008B3223 /* SwipeActionsTests.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; path = SwipeActionsTests.m; sourceTree = "<group>"; };
 		C05366131A8B1B8C008B3223 /* UIView+SwipeableActions.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = "UIView+SwipeableActions.h"; sourceTree = "<group>"; };
 		C05366141A8B1B8C008B3223 /* UIView+SwipeableActions.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = "UIView+SwipeableActions.m"; sourceTree = "<group>"; };
-		C05366161A8B1C41008B3223 /* SomeView.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = SomeView.h; sourceTree = "<group>"; };
-		C05366171A8B1C41008B3223 /* SomeView.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = SomeView.m; sourceTree = "<group>"; };
 /* End PBXFileReference section */
 
 /* Begin PBXFrameworksBuildPhase section */
@@ -91,8 +88,6 @@
 				C05365F21A8B1B78008B3223 /* AppDelegate.m */,
 				C05365F41A8B1B78008B3223 /* ViewController.h */,
 				C05365F51A8B1B78008B3223 /* ViewController.m */,
-				C05366161A8B1C41008B3223 /* SomeView.h */,
-				C05366171A8B1C41008B3223 /* SomeView.m */,
 				C05366131A8B1B8C008B3223 /* UIView+SwipeableActions.h */,
 				C05366141A8B1B8C008B3223 /* UIView+SwipeableActions.m */,
 				C05365F71A8B1B78008B3223 /* Main.storyboard */,
@@ -233,7 +228,6 @@
 				C05366151A8B1B8C008B3223 /* UIView+SwipeableActions.m in Sources */,
 				C05365F31A8B1B78008B3223 /* AppDelegate.m in Sources */,
 				C05365F01A8B1B78008B3223 /* main.m in Sources */,
-				C05366181A8B1C41008B3223 /* SomeView.m in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};

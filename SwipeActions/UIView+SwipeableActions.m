@@ -34,12 +34,10 @@ static CGFloat const kSwipeActionWidth = 60.0f;
 		UITapGestureRecognizer *tapGesture = [[UITapGestureRecognizer alloc] initWithTarget:self action:@selector(tapGestureTriggered:)];
 		[self addGestureRecognizer:tapGesture];
 
-		
 		self.scrollView.alpha = 0.0f;
-		self.actionButton.alpha = 0.0f;
 	} else {
 		[self setGestureRecognizers:nil];
-		[self destroySubviews];
+		[self.scrollView removeFromSuperview];
 	}
 }
 
@@ -48,6 +46,7 @@ static CGFloat const kSwipeActionWidth = 60.0f;
 	UIScrollView *scrollView = (UIScrollView *)[self viewWithTag:kSwipeScrollViewTag];
 	if (!scrollView) {
 		scrollView = [[UIScrollView alloc] initWithFrame:self.bounds];
+		scrollView.backgroundColor = [UIColor whiteColor];
 		scrollView.autoresizingMask = UIViewAutoresizingFlexibleWidth|UIViewAutoresizingFlexibleHeight;
 		scrollView.tag = kSwipeScrollViewTag;
 		scrollView.contentSize = CGSizeMake(CGRectGetWidth(self.bounds) + kSwipeActionWidth, CGRectGetHeight(self.bounds));
@@ -86,15 +85,16 @@ static CGFloat const kSwipeActionWidth = 60.0f;
 	return button;
 }
 
-- (void)swipeGestureTriggered:(id)sender
+- (void)swipeGestureTriggered:(UISwipeGestureRecognizer *)sender
 {
+	[self.imageView setNeedsDisplay];
 	self.scrollView.alpha = 1.0f;
-	self.actionButton.alpha = 1.0f;
 }
 
-- (void)tapGestureTriggered:(id)sender
+- (void)tapGestureTriggered:(UITapGestureRecognizer *)sender
 {
-	if (self.scrollView.contentOffset.x > kSwipeActionWidth) {
+	UIScrollView *scrollView = (UIScrollView *)[self viewWithTag:kSwipeScrollViewTag];
+	if (scrollView && scrollView.contentOffset.x >= kSwipeActionWidth) {
 		[self closeScrollViewAnimated:YES];
 	}
 }
@@ -137,15 +137,8 @@ static CGFloat const kSwipeActionWidth = 60.0f;
 		self.scrollView.alpha = 0.0f;
 		self.scrollView.contentOffset = CGPointZero;
 	} completion:^(BOOL finished) {
-		[self destroySubviews];
+		[self.scrollView removeFromSuperview];
 	}];
-}
-
-- (void)destroySubviews
-{
-	[self.scrollView removeFromSuperview];
-	[self.imageView removeFromSuperview];
-	[self.actionButton removeFromSuperview];
 }
 
 @end
